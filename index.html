@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
+<title>SLキッティング</title>
+<style>
+<!--
+body{ -webkit-text-size-adjust: 100%; vertical-align:middle;}
+table,input{ font-size: 16px; border-spacing:10px;}
+input{ height:20px; width:100%;}
+input#no{width:30%;}
+a { -webkit-tap-highlight-color:#ff0000; }
+button{
+	border-radius: 0;
+	-webkit-box-sizing: content-box;
+	-webkit-appearance: button;
+	appearance: button;
+	box-sizing: border-box;
+	height:30px;
+	width:150px;
+}
+input:focus{ outline:0; border-color:#ff9900;}
+//-->
+</style>
+<script>
+
+var json = [];
+var req = new XMLHttpRequest();
+req.open("GET", "./setting.json", false);
+req.onload = function(){
+	if(window.JSON){
+		json = JSON.parse(this.responseText);
+	}
+}
+req.send(null);
+
+var search = function(){
+	// 番号取得
+	var no = document.getElementById("no").value;
+	var imei = document.getElementById("imei").value.replace(" ","");
+
+	for(i = 0; i < 5; i++){
+		imei = imei.replace(" ","");
+	}
+	//リセット 空にする
+	for(var key in json[0]){
+		if( ! (key == "no" || key == "imei")){
+			var el = document.getElementById(key);
+			if(el != null){
+				el.value = "";
+			}
+		}
+	}
+
+	if(no == ""){
+		return;
+	}
+
+	//JSONから値を取得
+	for(var i=0; i < json.length;i++){
+		var itm = json[i];
+
+		if( itm.no == no && itm.imei == imei){
+			for(var key in itm){
+				if( ! (key == "no" || key == "imei" || key == "apn")){
+					var el = document.getElementById(key);
+					if(el != null){
+						el.value = itm[key];
+					}
+				}
+				if( key == "apn"){
+					//apnはリンクを作成
+					var el = document.getElementById(key);
+					var link = "./apn/"+itm[key];
+					el.innerHTML = '';
+					el.innerHTML += itm[key];
+					el.setAttribute("href", link);
+				}
+			}
+		}
+	}
+}
+
+//選択部分のコピー
+var txtCopy = function(target){
+	var start, end;
+	start = 0;
+	end = 9999;
+
+	//特定位置前までコピーする場合
+	switch(target.id){
+		case "email":
+			end = (target.value).indexOf("@");
+		break;
+	}
+	target.setSelectionRange(start, end);
+	document.execCommand("copy");
+}
+
+//リンク押下後の色
+var changeColor = function(t){
+t.style.color = "#ff0000";
+}
+
+//新しい画面を開く
+var openurl = function(url){
+	window.open(url);
+}
+
+</script>
+
+</head>
+<body style="width:80%;">
+<h2/>kitting Site<br/>
+<table style="width:110%;" border=0>
+<col style="width:40%;">
+<col style="width:100%;">
+
+
+
+<tr><td></td><td><input type="text" id="to" value="Tool" readOnly=true onclick="txtCopy(this);"></td></tr>
+<tr><td></td><td><input type="text" id="so" value="その他" readOnly=true onclick="txtCopy(this);"></td></tr>
+<tr><td></td><td><input type="son" id="ti" value="損保ジャパン" readOnly=true onclick="txtCopy(this);"></td></tr>
+<tr><td></td><td><input type="text" id="ka" value="東京海上日動" readOnly=true onclick="txtCopy(this);"></td></tr>
+<tr><td></td><td><input type="text" id="nk" value="日産カーライフ保険" readOnly=true onclick="txtCopy(this);"></td></tr>
+<tr><td></td><td><input type="text" id="nk" value="Nissan Connect" readOnly=true onclick="txtCopy(this);"></td></tr>
+</table>
+
+</body>
+</html>
